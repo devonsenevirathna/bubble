@@ -1,0 +1,6 @@
+{
+  "name": "Bubble & Squeak Mobile Car Detailing",
+  "description": "Professional mobile car detailing in Adelaide, South Australia. Convenient, high-quality exterior, interior, and full vehicle detailing brought directly to your doorstep.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

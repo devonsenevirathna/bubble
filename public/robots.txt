@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /draft/
+
+Sitemap: https://username.github.io/bubble-and-squeak-detailing/sitemap.xml
