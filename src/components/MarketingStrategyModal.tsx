@@ -338,26 +338,37 @@ export const MarketingStrategyModal: React.FC<MarketingStrategyModalProps> = ({ 
               <div>
                 <h3 className="text-base font-bold text-slate-900">GitHub Pages Static Deployment Guide</h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Follow these step-by-step instructions to deploy to GitHub Pages.
+                  Deployment configuration for <code className="text-[#009E89] font-mono">https://github.com/devonsenevirathna/bubble</code>
                 </p>
               </div>
 
               <div className="space-y-3 text-xs">
                 <div className="p-3 rounded-lg bg-slate-900 text-slate-200 font-mono space-y-2">
-                  <p className="text-emerald-400 font-sans font-semibold"># 1. Build the production static distribution</p>
-                  <p className="bg-black/40 p-2 rounded">npm run build</p>
-                  <p className="text-emerald-400 font-sans font-semibold"># 2. Verify relative base path in vite.config.ts</p>
-                  <p className="text-slate-400 font-sans">
-                    The project has been configured with <code className="text-teal-300">base: './'</code> so assets load seamlessly under subpaths like <code className="text-teal-300">https://&lt;username&gt;.github.io/&lt;repo-name&gt;/</code>.
+                  <p className="text-emerald-400 font-sans font-semibold"># 1. Automated Deployment via GitHub Actions (.github/workflows/deploy.yml)</p>
+                  <p className="text-slate-300 font-sans text-xs">
+                    Pushing to <code className="text-teal-300">main</code> or <code className="text-teal-300">master</code> automatically executes:
                   </p>
-                  <p className="text-emerald-400 font-sans font-semibold"># 3. Publish the dist folder to the gh-pages branch</p>
-                  <p className="bg-black/40 p-2 rounded">npx gh-pages -d dist</p>
+                  <p className="bg-black/40 p-2 rounded">
+                    npm install --legacy-peer-deps<br />
+                    npm run build<br />
+                    touch dist/.nojekyll
+                  </p>
+                  <p className="text-emerald-400 font-sans font-semibold"># 2. Vite Base Path Configuration</p>
+                  <p className="text-slate-400 font-sans">
+                    Configured in <code className="text-teal-300">vite.config.ts</code> with:
+                    <br />
+                    <code className="text-teal-300">base: process.env.VITE_BASE_PATH ?? (command === 'build' ? '/bubble/' : '/')</code>
+                  </p>
+                  <p className="text-emerald-400 font-sans font-semibold"># 3. Live Deployment Target</p>
+                  <p className="text-teal-300 font-sans">
+                    URL: https://devonsenevirathna.github.io/bubble/
+                  </p>
                 </div>
 
                 <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 space-y-1">
-                  <p className="font-semibold text-slate-900">GitHub Repository Configuration:</p>
+                  <p className="font-semibold text-slate-900">GitHub Repository One-Time Setup:</p>
                   <p>
-                    In your GitHub repository, navigate to <strong>Settings &gt; Pages</strong>. Under <strong>Build and deployment &gt; Source</strong>, select <strong>Deploy from a branch</strong>, choose <strong>gh-pages</strong> and <strong>/ (root)</strong>, then click <strong>Save</strong>.
+                    In your repository at <strong>https://github.com/devonsenevirathna/bubble</strong>, go to <strong>Settings &gt; Pages</strong>. Under <strong>Build and deployment &gt; Source</strong>, select <strong>GitHub Actions</strong>. The included workflow will handle everything automatically.
                   </p>
                 </div>
               </div>

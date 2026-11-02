@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PageId, ServiceCategory, ServiceItem } from '../types';
 import { SERVICES } from '../data/servicesData';
+import { ASSET_IMAGES } from '../assets/images';
 import { trackQuoteCtaClick, trackServiceSelect } from '../utils/analytics';
 import {
   Sparkles,
@@ -140,6 +141,23 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onNavigate, onSelect
             <div className="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Left Details */}
               <div className="lg:col-span-7 space-y-6">
+                <div className="rounded-xl overflow-hidden border border-slate-200 shadow-sm max-h-56 bg-slate-900">
+                  <img
+                    src={
+                      svc.id === 'exterior-detailing'
+                        ? ASSET_IMAGES.exteriorWash
+                        : svc.id === 'interior-detailing'
+                        ? ASSET_IMAGES.interior
+                        : svc.id === 'full-detailing'
+                        ? ASSET_IMAGES.hero
+                        : ASSET_IMAGES.wheelDetailing
+                    }
+                    alt={`${svc.name} mobile vehicle care in Adelaide`}
+                    className="w-full h-48 sm:h-56 object-cover hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                </div>
+
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">
                     Service Description

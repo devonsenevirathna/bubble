@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /draft/
 
-Sitemap: https://username.github.io/bubble-and-squeak-detailing/sitemap.xml
+Sitemap: https://devonsenevirathna.github.io/bubble/sitemap.xml

@@ -15,25 +15,25 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({ isOpen, onClose }) =
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Bubble & Squeak Mobile Car Detailing - Adelaide SA -->
   <url>
-    <loc>https://username.github.io/bubble-and-squeak-detailing/</loc>
+    <loc>https://devonsenevirathna.github.io/bubble/</loc>
     <lastmod>2026-11-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://username.github.io/bubble-and-squeak-detailing/#services</loc>
+    <loc>https://devonsenevirathna.github.io/bubble/#services</loc>
     <lastmod>2026-11-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://username.github.io/bubble-and-squeak-detailing/#contact</loc>
+    <loc>https://devonsenevirathna.github.io/bubble/#contact</loc>
     <lastmod>2026-11-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://username.github.io/bubble-and-squeak-detailing/#about</loc>
+    <loc>https://devonsenevirathna.github.io/bubble/#about</loc>
     <lastmod>2026-11-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -47,7 +47,7 @@ Disallow: /admin/
 Disallow: /draft/
 
 # Canonical Sitemap URL
-Sitemap: https://username.github.io/bubble-and-squeak-detailing/sitemap.xml`;
+Sitemap: https://devonsenevirathna.github.io/bubble/sitemap.xml`;
 
   const copyToClipboard = (text: string, type: 'sitemap' | 'robots') => {
     navigator.clipboard.writeText(text);
