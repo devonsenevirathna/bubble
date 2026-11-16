@@ -127,6 +127,14 @@ export const Footer: React.FC<FooterProps> = ({
                   About Our Mobile Philosophy
                 </button>
               </li>
+              <li>
+                <button
+                  onClick={() => handleNav('blog')}
+                  className="hover:text-[#00BFA6] transition-colors"
+                >
+                  Car Care Tips &amp; Detailing Blog
+                </button>
+              </li>
             </ul>
           </div>
 

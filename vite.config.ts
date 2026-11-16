@@ -2,11 +2,25 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig} from 'vite';
+import {generatePrerenderedRoutes} from './src/utils/prerender';
 
 export default defineConfig(({ command }) => {
+  const basePath = process.env.VITE_BASE_PATH ?? (command === 'build' ? '/bubble/' : '/');
+
   return {
-    base: process.env.VITE_BASE_PATH ?? (command === 'build' ? '/bubble/' : '/'),
-    plugins: [react(), tailwindcss()],
+    base: basePath,
+    plugins: [
+      react(),
+      tailwindcss(),
+      {
+        name: 'prerender-static-routes',
+        apply: 'build',
+        closeBundle() {
+          const distDir = path.resolve(import.meta.dirname ?? '.', 'dist');
+          generatePrerenderedRoutes(distDir, basePath);
+        },
+      },
+    ],
     resolve: {
       alias: {
         '@': path.resolve(import.meta.dirname ?? '.', '.'),

@@ -24,8 +24,16 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'home', label: 'Home' },
     { id: 'about', label: 'About Us' },
     { id: 'services', label: 'Services' },
+    { id: 'blog', label: 'Blog' },
     { id: 'contact', label: 'Contact & Quote' },
   ];
+
+  const isLinkActive = (linkId: PageId) => {
+    if (linkId === 'blog') {
+      return currentPage === 'blog' || currentPage === 'blog-article';
+    }
+    return currentPage === linkId;
+  };
 
   const handleNavClick = (page: PageId) => {
     onNavigate(page);
@@ -105,14 +113,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
 
           {/* Desktop Navigation Links */}
-          <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-8">
+          <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-7">
             {navLinks.map((link) => {
-              const isActive = currentPage === link.id;
+              const isActive = isLinkActive(link.id);
               return (
                 <button
                   key={link.id}
                   onClick={() => handleNavClick(link.id)}
-                  className={`text-sm font-semibold transition-all py-1.5 border-b-2 ${
+                  className={`text-sm font-semibold transition-all py-1.5 border-b-2 whitespace-nowrap ${
                     isActive
                       ? 'text-white border-[#00BFA6]'
                       : 'text-slate-300 hover:text-white border-transparent hover:border-slate-500'
@@ -165,7 +173,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="md:hidden border-t border-slate-800 bg-[#151A20] px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top-2 duration-200">
           <nav aria-label="Mobile Navigation" className="flex flex-col space-y-1">
             {navLinks.map((link) => {
-              const isActive = currentPage === link.id;
+              const isActive = isLinkActive(link.id);
               return (
                 <button
                   key={link.id}

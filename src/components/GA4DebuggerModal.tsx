@@ -214,7 +214,10 @@ export const GA4DebuggerModal: React.FC<GA4DebuggerModalProps> = ({ isOpen, onCl
                 Meets academic criteria for GA4 measurement by tracking distinct user conversion steps:
                 <code className="mx-1 px-1 py-0.5 bg-teal-100 rounded text-teal-950 font-mono">page_view</code>,
                 <code className="mx-1 px-1 py-0.5 bg-teal-100 rounded text-teal-950 font-mono">quote_cta_click</code>,
-                <code className="mx-1 px-1 py-0.5 bg-teal-100 rounded text-teal-950 font-mono">service_select</code>, and
+                <code className="mx-1 px-1 py-0.5 bg-teal-100 rounded text-teal-950 font-mono">service_select</code>,
+                <code className="mx-1 px-1 py-0.5 bg-teal-100 rounded text-teal-950 font-mono">blog_article_click</code>,
+                <code className="mx-1 px-1 py-0.5 bg-teal-100 rounded text-teal-950 font-mono">blog_to_services_click</code>,
+                <code className="mx-1 px-1 py-0.5 bg-teal-100 rounded text-teal-950 font-mono">blog_to_quote_click</code>, and
                 <code className="mx-1 px-1 py-0.5 bg-teal-100 rounded text-teal-950 font-mono">quote_draft_validated</code>.
               </p>
             </div>

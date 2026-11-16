@@ -14,6 +14,7 @@ const DEFAULT_MEASUREMENT_ID = 'G-BUBBLESQUEAK'; // Standard academic demonstrat
 
 let eventListeners: Array<(events: AnalyticsEvent[]) => void> = [];
 const eventHistory: AnalyticsEvent[] = [];
+let lastTrackedPageKey: string | null = null;
 
 export function getMeasurementId(): string {
   if (typeof window === 'undefined') return DEFAULT_MEASUREMENT_ID;
@@ -63,7 +64,7 @@ export function initGA4(measurementId: string = getMeasurementId()): void {
   });
 
   window.gtag('config', measurementId, {
-    send_page_view: false, // We manually trigger page_view to support SPA routing accurately
+    send_page_view: false, // We manually trigger page_view to support SPA routing accurately without duplicates
     anonymize_ip: true,
     cookie_flags: 'SameSite=None;Secure',
   });
@@ -112,12 +113,42 @@ export function trackEvent(
   notifyListeners();
 }
 
-export function trackPageView(pageId: string, pageTitle: string): void {
-  trackEvent('page_view', {
+export function trackPageView(
+  pageId: string,
+  pageTitle: string,
+  options?: {
+    customPath?: string;
+    pageType?: 'standard' | 'blog_index' | 'blog_article';
+    articleSlug?: string;
+    articleCategory?: string;
+  }
+): void {
+  const pagePath = options?.customPath ?? `/${pageId === 'home' ? '' : pageId}`;
+  const dedupeKey = `${pagePath}::${options?.articleSlug || ''}`;
+
+  // Avoid duplicate page_view events for the same active route
+  if (lastTrackedPageKey === dedupeKey) {
+    return;
+  }
+  lastTrackedPageKey = dedupeKey;
+
+  const params: Record<string, string | number | boolean | undefined> = {
     page_location: typeof window !== 'undefined' ? window.location.href : '',
-    page_path: `/${pageId === 'home' ? '' : pageId}`,
+    page_path: pagePath,
     page_title: pageTitle,
-  });
+  };
+
+  if (options?.pageType) {
+    params.page_type = options.pageType;
+  }
+  if (options?.articleSlug) {
+    params.article_slug = options.articleSlug;
+  }
+  if (options?.articleCategory) {
+    params.article_category = options.articleCategory;
+  }
+
+  trackEvent('page_view', params);
 }
 
 export function trackQuoteCtaClick(location: string, label: string, serviceId?: string): void {
@@ -141,6 +172,44 @@ export function trackQuoteDraftValidated(vehicleType: string, serviceId: string,
     vehicle_type: vehicleType,
     service_id: serviceId,
     adelaide_suburb_region: suburb,
+  });
+}
+
+export function trackBlogArticleClick(
+  location: string,
+  articleSlug: string,
+  articleCategory: string
+): void {
+  trackEvent('blog_article_click', {
+    click_location: location,
+    article_slug: articleSlug,
+    article_category: articleCategory,
+  });
+}
+
+export function trackBlogToServicesClick(
+  location: string,
+  articleSlug: string,
+  label: string
+): void {
+  trackEvent('blog_to_services_click', {
+    cta_location: location,
+    source_article: articleSlug,
+    cta_label: label,
+  });
+}
+
+export function trackBlogToQuoteClick(
+  location: string,
+  articleSlug: string,
+  label: string,
+  serviceId?: string
+): void {
+  trackEvent('blog_to_quote_click', {
+    cta_location: location,
+    source_article: articleSlug,
+    cta_label: label,
+    target_service: serviceId || 'general',
   });
 }
 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { PageId, AnalyticsEvent } from './types';
 import { updatePageSEO, PAGE_SEO } from './utils/seo';
+import { buildRouteUrl, parseCurrentRoute } from './utils/routes';
+import { getBlogArticleBySlug } from './data/blogData';
 import {
   initGA4,
   trackPageView,
@@ -12,6 +14,8 @@ import { Footer } from './components/Footer';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
+import { BlogPage } from './pages/BlogPage';
+import { BlogArticlePage } from './pages/BlogArticlePage';
 import { ContactPage } from './pages/ContactPage';
 import { GA4DebuggerModal } from './components/GA4DebuggerModal';
 import { MarketingStrategyModal } from './components/MarketingStrategyModal';
@@ -19,18 +23,12 @@ import { SitemapModal } from './components/SitemapModal';
 import { ConsentBanner } from './components/ConsentBanner';
 
 export default function App() {
-  // Sync page state with URL hash for GitHub Pages static compatibility
-  const getInitialPage = (): PageId => {
-    if (typeof window !== 'undefined') {
-      const hash = window.location.hash.replace('#', '').toLowerCase();
-      if (hash === 'about' || hash === 'services' || hash === 'contact') {
-        return hash as PageId;
-      }
-    }
-    return 'home';
-  };
+  const initialRoute = parseCurrentRoute();
 
-  const [currentPage, setCurrentPage] = useState<PageId>(getInitialPage);
+  const [currentPage, setCurrentPage] = useState<PageId>(initialRoute.page);
+  const [currentArticleSlug, setCurrentArticleSlug] = useState<string | undefined>(
+    initialRoute.articleSlug
+  );
   const [selectedServiceForQuote, setSelectedServiceForQuote] = useState<string>('full-detailing');
   const [isGA4ModalOpen, setIsGA4ModalOpen] = useState(false);
   const [isStrategyModalOpen, setIsStrategyModalOpen] = useState(false);
@@ -46,31 +44,63 @@ export default function App() {
     return unsubscribe;
   }, []);
 
-  // Handle Hash Changes (Back / Forward browser buttons)
+  // Sync state with browser back/forward navigation and hash changes
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '').toLowerCase();
-      if (hash === 'about' || hash === 'services' || hash === 'contact') {
-        setCurrentPage(hash as PageId);
-      } else {
-        setCurrentPage('home');
-      }
+    const syncRouteFromLocation = () => {
+      const parsed = parseCurrentRoute();
+      setCurrentPage(parsed.page);
+      setCurrentArticleSlug(parsed.articleSlug);
     };
 
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', syncRouteFromLocation);
+    window.addEventListener('hashchange', syncRouteFromLocation);
+    return () => {
+      window.removeEventListener('popstate', syncRouteFromLocation);
+      window.removeEventListener('hashchange', syncRouteFromLocation);
+    };
   }, []);
 
-  // Update SEO and trigger GA4 page_view when page changes
-  useEffect(() => {
-    updatePageSEO(currentPage);
-    const seoMeta = PAGE_SEO[currentPage];
-    trackPageView(currentPage, seoMeta.title);
-  }, [currentPage]);
+  const activeArticle =
+    currentPage === 'blog-article' && currentArticleSlug
+      ? getBlogArticleBySlug(currentArticleSlug)
+      : undefined;
 
-  const handleNavigate = useCallback((page: PageId) => {
-    setCurrentPage(page);
-    window.location.hash = page === 'home' ? '' : page;
+  // Update SEO metadata and trigger a single GA4 page_view per unique route
+  useEffect(() => {
+    if (currentPage === 'blog-article' && activeArticle) {
+      updatePageSEO('blog-article', activeArticle);
+      trackPageView('blog-article', activeArticle.seoTitle, {
+        customPath: `/blog/${activeArticle.slug}/`,
+        pageType: 'blog_article',
+        articleSlug: activeArticle.slug,
+        articleCategory: activeArticle.category,
+      });
+      return;
+    }
+
+    const effectivePage = currentPage === 'blog-article' ? 'blog' : currentPage;
+    updatePageSEO(effectivePage);
+    const seoMeta = PAGE_SEO[effectivePage];
+    trackPageView(effectivePage, seoMeta.title, {
+      customPath: seoMeta.canonicalPath,
+      pageType: effectivePage === 'blog' ? 'blog_index' : 'standard',
+    });
+  }, [currentPage, activeArticle]);
+
+  const handleNavigate = useCallback((page: PageId, articleSlug?: string) => {
+    const resolvedPage: PageId =
+      page === 'blog-article' && (!articleSlug || !getBlogArticleBySlug(articleSlug))
+        ? 'blog'
+        : page;
+
+    setCurrentPage(resolvedPage);
+    setCurrentArticleSlug(resolvedPage === 'blog-article' ? articleSlug : undefined);
+
+    const targetUrl = buildRouteUrl(resolvedPage, articleSlug);
+    if (typeof window !== 'undefined' && window.location.pathname !== targetUrl) {
+      window.history.pushState({ page: resolvedPage, articleSlug }, '', targetUrl);
+    }
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -80,7 +110,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F3F5F6] text-[#151A20]">
-      {/* Skip to Main Content Link (Accessibility WCAG 2.4.1) */}
+      {/* Skip to Main Content Link */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#00BFA6] focus:text-[#151A20] focus:font-bold focus:rounded-md focus:shadow-lg focus:outline-none"
@@ -111,6 +141,17 @@ export default function App() {
             onNavigate={handleNavigate}
             onSelectServiceForQuote={handleSelectServiceForQuote}
           />
+        )}
+        {currentPage === 'blog' && <BlogPage onNavigate={handleNavigate} />}
+        {currentPage === 'blog-article' && activeArticle && (
+          <BlogArticlePage
+            article={activeArticle}
+            onNavigate={handleNavigate}
+            onSelectServiceForQuote={handleSelectServiceForQuote}
+          />
+        )}
+        {currentPage === 'blog-article' && !activeArticle && (
+          <BlogPage onNavigate={handleNavigate} />
         )}
         {currentPage === 'contact' && (
           <ContactPage

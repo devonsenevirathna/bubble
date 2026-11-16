@@ -1,4 +1,6 @@
-import { PageId } from '../types';
+import { BlogArticle, PageId } from '../types';
+
+export const PRODUCTION_BASE_URL = 'https://devonsenevirathna.github.io/bubble';
 
 export interface PageMetadata {
   title: string;
@@ -8,7 +10,7 @@ export interface PageMetadata {
   canonicalPath: string;
 }
 
-export const PAGE_SEO: Record<PageId, PageMetadata> = {
+export const PAGE_SEO: Record<Exclude<PageId, 'blog-article'>, PageMetadata> = {
   home: {
     title: 'Bubble & Squeak Mobile Car Detailing | Adelaide SA',
     metaDescription:
@@ -25,7 +27,7 @@ export const PAGE_SEO: Record<PageId, PageMetadata> = {
     h1: 'About Bubble & Squeak Mobile Car Detailing',
     keywords:
       'about mobile car detailing Adelaide, Adelaide mobile auto care, car detailing philosophy, professional car detailing Adelaide',
-    canonicalPath: '/about',
+    canonicalPath: '/about/',
   },
   services: {
     title: 'Mobile Car Detailing Services & Packages | Adelaide SA',
@@ -34,7 +36,16 @@ export const PAGE_SEO: Record<PageId, PageMetadata> = {
     h1: 'Our Mobile Detailing Services',
     keywords:
       'car detailing services Adelaide, exterior car detailing Adelaide, interior car cleaning Adelaide, full car detail Adelaide',
-    canonicalPath: '/services',
+    canonicalPath: '/services/',
+  },
+  blog: {
+    title: 'Car Care Tips & Mobile Detailing Blog | Adelaide SA',
+    metaDescription:
+      'Expert car care advice, vehicle maintenance tips, and mobile car detailing guides for Adelaide drivers from Bubble & Squeak Mobile Car Detailing.',
+    h1: 'Car Care Tips & Mobile Detailing Insights',
+    keywords:
+      'mobile car detailing blog, car detailing Adelaide tips, mobile auto detailing advice, car wash vs detailing Adelaide',
+    canonicalPath: '/blog/',
   },
   contact: {
     title: 'Request a Free Quote | Bubble & Squeak Detailing Adelaide',
@@ -43,32 +54,93 @@ export const PAGE_SEO: Record<PageId, PageMetadata> = {
     h1: 'Request a Free Mobile Detailing Quote',
     keywords:
       'mobile car detailing quote Adelaide, book car detailing Adelaide, mobile car wash enquiry Adelaide',
-    canonicalPath: '/contact',
+    canonicalPath: '/contact/',
   },
 };
 
-export function updatePageSEO(pageId: PageId): void {
-  const meta = PAGE_SEO[pageId];
-  if (!meta || typeof document === 'undefined') return;
+function upsertMetaTag(attrName: 'name' | 'property', attrValue: string, content: string): void {
+  let tag = document.querySelector(`meta[${attrName}="${attrValue}"]`);
+  if (!tag) {
+    tag = document.createElement('meta');
+    tag.setAttribute(attrName, attrValue);
+    document.head.appendChild(tag);
+  }
+  tag.setAttribute('content', content);
+}
 
-  // Update title
+export function buildBlogPostingJsonLd(article: BlogArticle): Record<string, unknown> {
+  const canonicalUrl = `${PRODUCTION_BASE_URL}/blog/${article.slug}/`;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: article.title,
+    alternativeHeadline: article.seoTitle,
+    description: article.metaDescription,
+    datePublished: article.publishedDate,
+    dateModified: article.publishedDate,
+    inLanguage: 'en-AU',
+    articleSection: article.category,
+    keywords: [article.primaryKeyword, ...article.secondaryKeywords].join(', '),
+    author: {
+      '@type': 'Organization',
+      name: 'Bubble & Squeak Mobile Car Detailing',
+      url: `${PRODUCTION_BASE_URL}/`,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Bubble & Squeak Mobile Car Detailing',
+      url: `${PRODUCTION_BASE_URL}/`,
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonicalUrl,
+    },
+    url: canonicalUrl,
+    about: {
+      '@type': 'Service',
+      name: 'Mobile Car Detailing in Adelaide',
+      areaServed: {
+        '@type': 'City',
+        name: 'Adelaide',
+      },
+    },
+  };
+}
+
+export function updatePageSEO(pageId: PageId, article?: BlogArticle): void {
+  if (typeof document === 'undefined') return;
+
+  const isArticle = pageId === 'blog-article' && Boolean(article);
+  const meta =
+    pageId === 'blog-article'
+      ? article
+        ? {
+            title: article.seoTitle,
+            metaDescription: article.metaDescription,
+            keywords: [article.primaryKeyword, ...article.secondaryKeywords].join(', '),
+            canonicalPath: `/blog/${article.slug}/`,
+          }
+        : PAGE_SEO.blog
+      : PAGE_SEO[pageId];
+
+  const canonicalUrl = `${PRODUCTION_BASE_URL}${meta.canonicalPath}`;
+
+  // Update <title>
   document.title = meta.title;
 
-  // Update meta description
-  let descTag = document.querySelector('meta[name="description"]');
-  if (!descTag) {
-    descTag = document.createElement('meta');
-    descTag.setAttribute('name', 'description');
-    document.head.appendChild(descTag);
-  }
-  descTag.setAttribute('content', meta.metaDescription);
+  // Update meta tags
+  upsertMetaTag('name', 'description', meta.metaDescription);
+  upsertMetaTag('name', 'keywords', meta.keywords);
 
-  // Update OpenGraph title and description
-  const ogTitle = document.querySelector('meta[property="og:title"]');
-  if (ogTitle) ogTitle.setAttribute('content', meta.title);
+  // Update OpenGraph metadata
+  upsertMetaTag('property', 'og:type', isArticle ? 'article' : 'website');
+  upsertMetaTag('property', 'og:title', meta.title);
+  upsertMetaTag('property', 'og:description', meta.metaDescription);
+  upsertMetaTag('property', 'og:url', canonicalUrl);
 
-  const ogDesc = document.querySelector('meta[property="og:description"]');
-  if (ogDesc) ogDesc.setAttribute('content', meta.metaDescription);
+  // Update Twitter card metadata
+  upsertMetaTag('name', 'twitter:title', meta.title);
+  upsertMetaTag('name', 'twitter:description', meta.metaDescription);
 
   // Update canonical link
   let canonical = document.querySelector('link[rel="canonical"]');
@@ -77,6 +149,19 @@ export function updatePageSEO(pageId: PageId): void {
     canonical.setAttribute('rel', 'canonical');
     document.head.appendChild(canonical);
   }
-  const baseUrl = window.location.origin + window.location.pathname.replace(/\/+$/, '');
-  canonical.setAttribute('href', `${baseUrl}#${pageId}`);
+  canonical.setAttribute('href', canonicalUrl);
+
+  // Manage BlogPosting JSON-LD structured data
+  const existingLd = document.getElementById('blog-posting-jsonld');
+  if (isArticle && article) {
+    const scriptEl = existingLd || document.createElement('script');
+    scriptEl.id = 'blog-posting-jsonld';
+    scriptEl.setAttribute('type', 'application/ld+json');
+    scriptEl.textContent = JSON.stringify(buildBlogPostingJsonLd(article));
+    if (!existingLd) {
+      document.head.appendChild(scriptEl);
+    }
+  } else if (existingLd) {
+    existingLd.remove();
+  }
 }

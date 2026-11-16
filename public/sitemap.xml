@@ -3,26 +3,62 @@
   <!-- Bubble & Squeak Mobile Car Detailing - Adelaide SA -->
   <url>
     <loc>https://devonsenevirathna.github.io/bubble/</loc>
-    <lastmod>2026-11-02</lastmod>
+    <lastmod>2026-11-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://devonsenevirathna.github.io/bubble/#services</loc>
-    <lastmod>2026-11-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://devonsenevirathna.github.io/bubble/#contact</loc>
-    <lastmod>2026-11-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://devonsenevirathna.github.io/bubble/#about</loc>
-    <lastmod>2026-11-02</lastmod>
+    <loc>https://devonsenevirathna.github.io/bubble/about/</loc>
+    <lastmod>2026-11-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://devonsenevirathna.github.io/bubble/services/</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://devonsenevirathna.github.io/bubble/blog/</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://devonsenevirathna.github.io/bubble/blog/mobile-car-detailing-adelaide-complete-guide/</loc>
+    <lastmod>2026-11-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://devonsenevirathna.github.io/bubble/blog/choose-mobile-car-detailing-adelaide/</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://devonsenevirathna.github.io/bubble/blog/mobile-car-detailing-vs-traditional-car-wash/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://devonsenevirathna.github.io/bubble/blog/how-often-get-car-detailed-adelaide/</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://devonsenevirathna.github.io/bubble/blog/why-mobile-auto-detailing-convenient-adelaide/</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://devonsenevirathna.github.io/bubble/contact/</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
 </urlset>
